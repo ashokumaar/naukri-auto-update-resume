@@ -10,7 +10,7 @@ const simulateActivity = require('./activity');
 const notify = require('./notify');
 
 const COOKIE_PATH = './session/cookies.json';
-const RESUME_PATH = './resume/resume.pdf';
+const RESUME_PATH = './resume/Resume_AshokKumarVG.pdf';
 
 console.log("EMAIL:", process.env.NAUKRI_EMAIL);
 

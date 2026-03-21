@@ -36,7 +36,7 @@ The script performs the following steps:
 │   ├── notify.js                 # Sends Telegram notifications
 │   └── utils.js                  # Helper functions (delay, retry, cookies)
 ├── resume/
-│   └── resume.pdf                # Your resume file
+│   └── Resume_AshokKumarVG.pdf                # Your resume file
 ├── session/
 │   └── cookies.json              # Stores session cookies
 ├── package.json
@@ -60,7 +60,7 @@ This will install Playwright and other required packages.
 
 ### 3. Add Your Resume
 
-Place your resume file inside the `resume/` directory and name it `resume.pdf`. If you use a different name, make sure to update the `RESUME_PATH` variable in `src/main.js`.
+Place your resume file inside the `resume/` directory and name it `Resume_AshokKumarVG.pdf`.
 
 ### 4. Configure Environment Variables
 
