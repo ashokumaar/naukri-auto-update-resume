@@ -1,0 +1,25 @@
+{
+  "name": "naukri-auto-update-resume",
+  "version": "1.0.0",
+  "description": "Automate Naukri resume daily update using Playwright and GitHub Actions",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashokumaar/naukri-auto-update-resume.git"
+  },
+  "keywords": ["automation", "playwright", "naukri", "job"],
+  "author": "Ashok Kumar V G",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashokumaar/naukri-auto-update-resume/issues"
+  },
+  "homepage": "https://github.com/ashokumaar/naukri-auto-update-resume#readme",
+  "dependencies": {
+    "playwright": "^1.42.0",
+    "node-fetch": "^2.6.7",
+    "dotenv": "^17.3.1"
+  }
+}
