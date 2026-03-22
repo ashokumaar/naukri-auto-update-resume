@@ -17,7 +17,11 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
 (async () => {
     const browser = await chromium.launch({
         headless: true,
-        args: ['--disable-blink-features=AutomationControlled']
+        args: [
+            '--disable-blink-features=AutomationControlled',
+            '--no-sandbox',
+            '--disable-dev-shm-usage'
+        ]
     });
 
     const context = await browser.newContext();
