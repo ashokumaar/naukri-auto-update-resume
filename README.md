@@ -4,6 +4,8 @@ This project automates the process of updating your resume on Naukri.com to keep
 
 ## Features
 
+-   **Headline Auto-Update**: Rotates between two profile headlines daily based on even/odd dates to keep your profile visibly active.
+-   **Auto Job Apply**: Automatically searches and applies to a few relevant jobs based on a keyword.
 -   **Automated Login**: Logs into your Naukri account.
 -   **Session Management**: Uses cookies to maintain login sessions and reduce the need for frequent logins.
 -   **Resume Upload**: Automatically uploads your latest resume.
@@ -74,6 +76,9 @@ NAUKRI_EMAIL="your-naukri-email@example.com"
 NAUKRI_PASSWORD="your-naukri-password"
 TELEGRAM_TOKEN="your-telegram-bot-token"
 TELEGRAM_CHAT_ID="your-telegram-chat-id"
+NAUKRI_HEADLINE_EVEN="Software Engineer with 4+ years of experience in Node.js and React"
+NAUKRI_HEADLINE_ODD="Full Stack Developer specialized in JavaScript, Node.js and Cloud Technologies"
+JOB_SEARCH_KEYWORD="Java spring boot developer"
 ```
 
 #### For GitHub Actions:

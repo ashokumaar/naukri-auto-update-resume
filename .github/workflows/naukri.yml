@@ -41,6 +41,9 @@ jobs:
           NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NAUKRI_HEADLINE_EVEN: ${{ secrets.NAUKRI_HEADLINE_EVEN }}
+          NAUKRI_HEADLINE_ODD: ${{ secrets.NAUKRI_HEADLINE_ODD }}
+          JOB_SEARCH_KEYWORD: ${{ secrets.JOB_SEARCH_KEYWORD }}
 
       # ❌ Upload screenshot on failure
       - name: Upload screenshot on failure
