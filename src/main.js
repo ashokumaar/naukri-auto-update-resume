@@ -22,11 +22,6 @@ const RESUME_PATH = './resume/Resume_AshokKumarVG.pdf';
 console.log("EMAIL:", process.env.NAUKRI_EMAIL);
 
 (async () => {
-    // 🕒 Add a random startup delay between 1 and 15 minutes to make execution time unpredictable
-    // const randomStartDelayMs = Math.floor(Math.random() * (15 * 60 * 1000 - 1 * 60 * 1000 + 1)) + (1 * 60 * 1000);
-    // console.log(`🕒 Applying a random startup delay of ${Math.round(randomStartDelayMs / 60000)} minutes to evade detection...`);
-    // await new Promise(resolve => setTimeout(resolve, randomStartDelayMs));
-
     // Launch browser with stealth options
     const browser = await chromium.launch({
         headless: false,
@@ -65,15 +60,15 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
         await page.waitForLoadState('domcontentloaded');
 
         // Step 4.5: Update Headline (based on Even/Odd day)
-        // const currentDay = new Date().getDate();
-        // const newHeadline = currentDay % 2 === 0 ? process.env.NAUKRI_HEADLINE_EVEN : process.env.NAUKRI_HEADLINE_ODD;
-        // if (newHeadline) {
-        //     await updateHeadline(page, newHeadline);
-        // }
+        const currentDay = new Date().getDate();
+        const newHeadline = currentDay % 2 === 0 ? process.env.NAUKRI_HEADLINE_EVEN : process.env.NAUKRI_HEADLINE_ODD;
+        if (newHeadline) {
+            await updateHeadline(page, newHeadline);
+        }
 
         // Step 5: upload resume (NO activity here)
-        // console.log("Before upload URL:", page.url());
-        // await uploadResume(page, RESUME_PATH);
+        console.log("Before upload URL:", page.url());
+        await uploadResume(page, RESUME_PATH);
 
         // 🎯 Step 5.5: Auto Apply to Jobs
         const applyKeyword = process.env.JOB_SEARCH_KEYWORD;
