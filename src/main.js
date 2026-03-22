@@ -1,5 +1,7 @@
 require('dotenv').config();
-const { chromium } = require('playwright');
+// Use playwright-extra to apply stealth plugin
+const { chromium } = require('playwright-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const fs = require('fs');
 
 const { loadCookies, delay } = require('./utils');
@@ -9,31 +11,25 @@ const uploadResume = require('./upload');
 const simulateActivity = require('./activity');
 const notify = require('./notify');
 
+// Apply the stealth plugin
+chromium.use(StealthPlugin());
+
 const COOKIE_PATH = './session/cookies.json';
 const RESUME_PATH = './resume/Resume_AshokKumarVG.pdf';
 
 console.log("EMAIL:", process.env.NAUKRI_EMAIL);
 
 (async () => {
+    // Launch browser with stealth options
     const browser = await chromium.launch({
         headless: true,
         args: [
-            '--disable-blink-features=AutomationControlled',
             '--no-sandbox',
             '--disable-dev-shm-usage'
         ]
     });
 
-    const context = await browser.newContext({
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
-    });
-
-    // Evade bot detection
-    await context.addInitScript(() => {
-        Object.defineProperty(navigator, 'webdriver', {
-            get: () => false,
-        });
-    });
+    const context = await browser.newContext();
 
     await loadCookies(context, COOKIE_PATH);
 

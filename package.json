@@ -20,6 +20,8 @@
   "dependencies": {
     "playwright": "^1.42.0",
     "node-fetch": "^2.6.7",
-    "dotenv": "^17.3.1"
+    "dotenv": "^17.3.1",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
 }
