@@ -17,7 +17,8 @@ async function uploadResume(page, RESUME_PATH) {
     }
 
     // 🔥 Step 2: Wait for file input
-    await page.waitForSelector('input[type="file"]', { timeout: 20000 });
+    // Use state: 'attached' because file inputs are often visually hidden on the page
+    await page.waitForSelector('input[type="file"]', { state: 'attached', timeout: 20000 });
 
     const fileInput = page.locator('input[type="file"]').first();
 

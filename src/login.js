@@ -1,7 +1,10 @@
 const { delay, retry, saveCookies } = require('./utils');
 
 async function isLoggedIn(page) {
-  return await page.locator('text=My Naukri').count() > 0;
+  // Wait up to 10s for either the login button or profile drawer to appear
+  await page.waitForSelector('#login_Layer, .nI-gNb-drawer', { timeout: 10000 }).catch(() => {});
+  // If the login button does NOT exist, we are logged in
+  return await page.locator('#login_Layer').count() === 0;
 }
 
 async function login(page, context, EMAIL, PASSWORD, COOKIE_PATH) {

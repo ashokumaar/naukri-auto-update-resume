@@ -20,9 +20,14 @@ const RESUME_PATH = './resume/Resume_AshokKumarVG.pdf';
 console.log("EMAIL:", process.env.NAUKRI_EMAIL);
 
 (async () => {
+    // 🕒 Add a random startup delay between 1 and 15 minutes to make execution time unpredictable
+    const randomStartDelayMs = Math.floor(Math.random() * (15 * 60 * 1000 - 1 * 60 * 1000 + 1)) + (1 * 60 * 1000);
+    console.log(`🕒 Applying a random startup delay of ${Math.round(randomStartDelayMs / 60000)} minutes to evade detection...`);
+    await new Promise(resolve => setTimeout(resolve, randomStartDelayMs));
+
     // Launch browser with stealth options
     const browser = await chromium.launch({
-        headless: true,
+        headless: false,
         args: [
             '--no-sandbox',
             '--disable-dev-shm-usage',
@@ -34,18 +39,7 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
     const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         viewport: { width: 1920, height: 1080 },
-        deviceScaleFactor: 1,
-        extraHTTPHeaders: {
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-            'Sec-Ch-Ua-Mobile': '?0',
-            'Sec-Ch-Ua-Platform': '"Windows"',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Upgrade-Insecure-Requests': '1'
-        }
+        deviceScaleFactor: 1
     });
 
     await loadCookies(context, COOKIE_PATH);
