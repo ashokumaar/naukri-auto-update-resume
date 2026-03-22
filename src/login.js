@@ -14,15 +14,8 @@ async function login(page, context, EMAIL, PASSWORD, COOKIE_PATH) {
 
   console.log("🔐 Logging in...");
 
-  // 🔥 Step 2: ONLY try clicking if exists
-  const loginBtn = page.locator('#login_Layer');
-
-  if (await loginBtn.count() === 0) {
-    console.log("⚠️ Login button not found, skipping login");
-    return;
-  }
-
-  await loginBtn.click();
+  // 🔥 Step 2: Click login button. This will now throw an error if not found.
+  await page.locator('#login_Layer').click();
 
   await page.waitForLoadState('domcontentloaded');
   await delay(3000, 5000);

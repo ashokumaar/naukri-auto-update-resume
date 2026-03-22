@@ -24,7 +24,16 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
         ]
     });
 
-    const context = await browser.newContext();
+    const context = await browser.newContext({
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+    });
+
+    // Evade bot detection
+    await context.addInitScript(() => {
+        Object.defineProperty(navigator, 'webdriver', {
+            get: () => false,
+        });
+    });
 
     await loadCookies(context, COOKIE_PATH);
 
