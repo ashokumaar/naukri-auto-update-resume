@@ -57,18 +57,18 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
         await goToProfile(page);
 
         // 🔥 Step 4: ensure profile loaded
-        await page.waitForLoadState('domcontentloaded');
+        // await page.waitForLoadState('domcontentloaded');
 
         // Step 4.5: Update Headline (based on Even/Odd day)
-        const currentDay = new Date().getDate();
-        const newHeadline = currentDay % 2 === 0 ? process.env.NAUKRI_HEADLINE_EVEN : process.env.NAUKRI_HEADLINE_ODD;
-        if (newHeadline) {
-            await updateHeadline(page, newHeadline);
-        }
+        // const currentDay = new Date().getDate();
+        // const newHeadline = currentDay % 2 === 0 ? process.env.NAUKRI_HEADLINE_EVEN : process.env.NAUKRI_HEADLINE_ODD;
+        // if (newHeadline) {
+        //     await updateHeadline(page, newHeadline);
+        // }
 
         // Step 5: upload resume (NO activity here)
-        console.log("Before upload URL:", page.url());
-        await uploadResume(page, RESUME_PATH);
+        // console.log("Before upload URL:", page.url());
+        // await uploadResume(page, RESUME_PATH);
 
         // 🎯 Step 5.5: Auto Apply to Jobs
         const applyKeyword = process.env.JOB_SEARCH_KEYWORD;
@@ -81,7 +81,17 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
         }
 
         // 📩 Step 6: notify success
-        await notify(`✅ Naukri Update Success\n📅 ${new Date().toLocaleString()}` + (applyKeyword ? `\n🎯 Auto-applied to ${appliedCount} jobs and opened ${openedCount} jobs to achieve this.` : ''));
+        let summaryMessage;
+        if (applyKeyword) {
+            if (appliedCount > 0) {
+                summaryMessage = `\n🎯 Auto-applied to ${appliedCount} jobs and opened ${openedCount} jobs to achieve this.`;
+            } else {
+                summaryMessage = `\n🚫 No new jobs found to apply. Opened ${openedCount} jobs.`;
+            }
+        } else {
+            summaryMessage = '';
+        }
+        await notify(`✅ Naukri Update Success\n📅 ${new Date().toLocaleString()}` + summaryMessage);
 
     } catch (err) {
         console.error(err);

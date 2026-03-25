@@ -11,7 +11,7 @@ async function uploadResume(page, RESUME_PATH) {
     const updateBtn = page.locator('text=Update Resume');
 
     if (await updateBtn.count() > 0) {
-        await updateBtn.click();
+        await updateBtn.click({ force: true });
         console.log("🖱️ Clicked Update Resume");
         await delay(2000, 4000);
     }
