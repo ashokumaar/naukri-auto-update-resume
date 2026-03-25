@@ -1,0 +1,147 @@
+---
+### About Me
+Full Stack Java Developer with 3.5 years of experience building scalable enterprise applications using Java, microservices architecture, and modern frameworks. Experienced in developing RESTful APIs and web applications with ReactJS. Skilled in CI/CD pipelines, containerization (Docker, Kubernetes), and cloud deployments (GKE, AWS). Proven ability to deliver secure and high-performance solutions in Agile environments.
+
+---
+### Specific Q&A
+- **Question**: What is your total years of experience?
+  - **Answer**: 3.5 years of professional experience.
+- **Question**: How many years of experience in Java?
+  - **Answer**: I have over 3.5 years of experience in Java development, including Java 8 and Java 21.
+- **Question**: How many years of experience in Spring Boot?
+  - **Answer**: I have over 3 years of hands-on experience with Spring Boot, developing RESTful APIs and microservices.
+- **Question**: How many years of experience in Microservices?
+  - **Answer**: I have over 3 years of experience designing and building applications using a microservices architecture.
+- **Question**: How many years of experience in ReactJS?
+  - **Answer**: I have around 1 year of experience developing web applications using ReactJS and integrating them with backend APIs.
+- **Question**: Are you proficient with cloud platforms?
+  - **Answer**: I have a foundational understanding of cloud platforms and hands-on experience with Google Kubernetes Engine (GKE) and AWS (EC2).
+- **Question**: What is your experience with CI/CD?
+  - **Answer**: I have experience implementing and using CI/CD pipelines with Jenkins, GitLab CI/CD, and GitHub Actions for automated builds, testing, and deployments.
+- **Question**: What is your current location?
+  - **Answer**: Hyderabad.
+- **Question**: Are you willing to relocate to Hyderabad/Bangalore?
+  - **Answer**: Yes, I am open to relocating for the right opportunity.
+- **Question**: What is your notice period?
+  - **Answer**: My notice period is 2 months.
+- **Question**: What is your current CTC?
+  - **Answer**: 7.5 LPA
+- **Question**: What is your expected CTC?
+  - **Answer**: 12 LPA
+- **Question**: What is your experience with AI-assisted coding or AI agents?
+  - **Answer**: I actively utilize AI-assisted coding environments like GitHub Copilot for code generation, debugging, and improving development productivity. I leverage AI tools to generate code snippets, documentation, basic test cases, and for code refactoring and troubleshooting.
+- **Question**: Are you legally authorized to work in India?
+  - **Answer**: Yes.
+- **Question**: Do you now or in the future require visa sponsorship to work?
+  - **Answer**: No.
+- **Question**: What languages are you proficient in?
+  - **Answer**: English (Professional Working Proficiency), Telugu (Native or Bilingual Proficiency).
+
+---
+### Behavioral Q&A
+- **Question**: Describe a challenging project and how you overcame obstacles.
+  - **Answer**: On a project to modernize a legacy insurance application, the main challenge was migrating monolithic JSP/Servlet modules to a microservices architecture without disrupting existing services. My task was to refactor key components and ensure maintainability. I took action by reverse-engineering the legacy code to extract business logic, designing new RESTful APIs with Java 8 and MicroProfile, and implementing a CI/CD pipeline to automate deployments. The result was a more modular, scalable system with a 30% improvement in API response performance.
+- **Question**: Why are you interested in this role? / Why are you a good fit for this position?
+  - **Answer**: I am interested in this role because it aligns perfectly with my experience in full-stack Java development, microservices, and building scalable applications. My background in modernizing systems and developing RESTful APIs using frameworks like Spring Boot and ReactJS makes me confident that I can start contributing effectively to your team's goals from day one.
+- **Question**: What are your greatest strengths?
+  - **Answer**: My greatest strength is my ability to solve complex technical problems. I have a proven track record of modernizing legacy systems and designing scalable microservices architectures. I am also a quick learner, adaptable, and proficient in using modern development practices like Agile and CI/CD to deliver high-quality software efficiently.
+- **Question**: What are your long-term career goals? / Where do you see yourself in 5 years?
+  - **Answer**: In the next five years, I aim to grow into a senior technical role, such as a Senior or Lead Engineer. I want to be recognized as an expert in building and designing complex, scalable systems. I am eager to take on more responsibility, mentor junior developers, and contribute to significant architectural decisions, while continuously learning and mastering new technologies.
+- **Question**: What is your reason for leaving your current position?
+  - **Answer**: I am seeking a new opportunity that offers greater challenges and allows me to expand my skills in a fast-paced environment. I am eager to apply my experience to new problems and contribute to a team that is building innovative solutions.
+- **Question**: How do you handle making a mistake in your work?
+  - **Answer**: When I make a mistake, I take ownership immediately. I focus on understanding the root cause, fixing the issue, and communicating the solution to the team. I believe mistakes are learning opportunities, and I make sure to add safeguards, like new tests, to prevent similar issues in the future.
+- **Question**: How do you handle a disagreement with a team member?
+  - **Answer**: I handle disagreements by listening to all perspectives and focusing on a constructive, data-driven solution. I prioritize professional respect and open communication to find the best outcome for the project, not to 'win' an argument.
+- **Question**: How do you keep your technical skills up-to-date?
+  - **Answer**: I am committed to continuous learning. I regularly read technical blogs, follow industry leaders, and work on personal projects to explore new technologies. For instance, my personal e-commerce project was a way for me to deepen my hands-on experience with GKE, Docker, and advanced microservices patterns.
+- **Question**: What is your greatest weakness?
+  - **Answer**: My greatest weakness is that I can sometimes be too focused on the technical details of a project. While this is beneficial for code quality, I've learned the importance of balancing deep dives with the overall project timeline. I am actively working on improving this by participating more in planning meetings to ensure my efforts are always aligned with the highest-priority tasks.
+- **Question**: Can you explain the employment gap on your resume?
+  - **Answer**: The employment gap between December 2023 and August 2024 was a deliberate period I took for professional development. During this time, I focused on building a complete e-commerce application from scratch, which allowed me to gain hands-on experience with GKE, Docker, and advanced microservices patterns. This period was invaluable for upskilling and preparing me for my next challenging role.
+
+---
+### Skill Experience Breakdown
+- **Java**: 3.5 years
+- **Spring Boot**: 3+ years
+- **Microservices Architecture**: 3+ years
+- **ReactJS**: 1 year
+- **RESTful APIs**: 3.5 years
+- **CI/CD (Jenkins, Gitlab, GitHub Actions)**: 3 years
+- **Docker**: 1 year
+- **Kubernetes (GKE)**: 1 year
+- **AWS**: 1 year
+- **Databases (MySQL, Oracle)**: 3.5 years
+- **Git**: 3.5 years
+
+---
+### Domain Experience
+- **Insurance**: Experience modernizing legacy insurance applications.
+- **Sales & Activity Management**: Experience developing systems for sales activities, route management, and customer interactions.
+- **Billing Systems**: Experience developing backend modules for billing, invoicing, and payment processing.
+- **E-commerce**: Experience building a scalable microservices-based e-commerce platform (personal project).
+
+---
+### Detailed Project Experience
+
+**Project: Legacy Insurance Application Modernization (Client: USAA)**
+- Modernized legacy insurance applications by migrating JSP/Servlet-based modules to microservices using Open Liberty and MicroProfile, improving maintainability and scalability.
+- Refactored monolithic components into loosely coupled microservices architecture, enabling independent deployment and better system modularity.
+- Designed and developed RESTful APIs using Java 8 and MicroProfile specifications (JAX-RS) for communication between distributed services, improving API response performance by 30%.
+- Analyzed and reverse engineered legacy codebase to extract reusable business logic and support microservices transformation.
+- Contributed to CI/CD pipeline implementation using GitLab CI/CD with Gradle-based builds, enabling automated build, testing, and deployment workflows.
+- Ensured code quality and reliability by implementing unit testing (JUnit, Mockito) and static analysis using SonarQube.
+
+**Project: Sales Route and Activity Management System**
+- Developed RESTful APIs using Spring Boot for tracking sales activities, route management, and customer interactions.
+- Implemented JWT-based authentication and Spring Security, ensuring secure and role-based data access across multiple organizations.
+- Designed and optimized MySQL database schemas, queries, and stored procedures, improving data retrieval performance.
+- Deployed application on AWS EC2 with load balancing and auto-scaling, ensuring high availability and scalability.
+- Collaborated with frontend teams to integrate ReactJS UI with backend APIs, enabling seamless user experience.
+
+**Project: Billing System for Hughes Network Systems**
+- Developed backend modules using Java and enterprise technologies for customer account management, invoicing, and payment processing.
+- Designed and maintained REST APIs and backend services for system integration across multiple enterprise modules.
+- Optimized SQL queries and database operations, improving performance and data processing efficiency.
+- Collaborated with cross-functional teams to analyze requirements and deliver scalable backend solutions.
+- Supported CI/CD pipelines and version control using Git, enabling efficient code integration and deployment.
+
+**Project: E-commerce Microservices Web Application (Personal)**
+- Built a scalable microservices-based e-commerce platform supporting authentication, product management, and order processing workflows.
+- Designed and developed backend services using Spring Boot, following distributed system architecture principles.
+- Developed a responsive frontend using ReactJS, integrating APIs for catalog, cart, and checkout workflows.
+- Implemented JWT-based authentication and API Gateway routing for secure and efficient request handling.
+- Containerized services using Docker and deployed on GKE, ensuring high availability and scalability.
+- Automated CI/CD pipelines using GitHub Actions, enabling faster and reliable deployments.
+
+---
+### Technical Skills Summary
+- **Programming Languages**: Java (Java 8, Java 21)
+- **Frameworks & Libraries**: Spring Boot, Spring MVC, MicroProfile, Microservices Architecture, ReactJS, Angular (familiarity)
+- **Web & API Technologies**: RESTful APIs, JSON
+- **Databases**: MySQL, Oracle
+- **DevOps & Build Tools**: Git, Gradle, Maven, Jenkins, Docker, Kubernetes
+- **Cloud Platforms**: Google Kubernetes Engine (GKE), AWS
+- **Testing**: JUnit, Mockito
+- **Application Servers**: Open Liberty
+- **Development Practices**: Agile Methodology, CI/CD, AI-Assisted Development
+
+---
+### Work Experience Summary
+1.  **Java Developer at Tata Consultancy Services**: Modernized legacy insurance applications to a microservices architecture using Open Liberty and MicroProfile. Developed RESTful APIs and contributed to CI/CD pipelines.
+2.  **Full Stack Java Developer at LeadIcon Technologies**: Developed RESTful APIs using Spring Boot for a sales management system. Implemented JWT-based security and deployed applications on AWS EC2.
+3.  **Java Developer at Capgemini Engineering**: Developed backend modules for a billing system using Java. Optimized SQL queries and maintained REST APIs for enterprise integration.
+
+---
+### Education
+- **Degree**: B.Tech in Electronics and Communications Engineering
+  - **Institution**: Rajeev Gandhi Memorial College of Engineering & Technology, Nandyal.
+  - **Graduation Year**: 2021
+- **Degree**: Intermediate (MPC)
+  - **Institution**: Narayana Jr. College, Kurnool
+  - **Board**: Board of Intermediate Education, Andhra Pradesh
+  - **Completion Year**: 2017
+- **Degree**: 10th Class (SSC)
+  - **Institution**: Nandyal Public School, Nandyal
+  - **Board**: CBSE
+  - **Completion Year**: 2015
