@@ -1,6 +1,8 @@
 const { delay } = require('./utils');
+const fs = require('fs');
+const path = require('path');
 
-async function autoApply(page, context, keyword) {
+async function autoApply(page, context, keyword, blocklist) {
     if (!keyword) {
         console.log("⏭️ No JOB_SEARCH_KEYWORD provided, skipping auto apply.");
         return { appliedCount: 0, openedCount: 0 };
@@ -51,15 +53,15 @@ async function autoApply(page, context, keyword) {
         await page.waitForLoadState('domcontentloaded');
         await delay(4000, 6000);
 
-        const targetApplyCount = 10; // Number of successful applications desired
+        const targetApplyCount = 5; // Number of successful applications desired
         console.log(`🎯 Goal: Successfully apply to ${targetApplyCount} jobs`);
 
         let hasNextPage = true;
 
         while (appliedCount < targetApplyCount && hasNextPage) {
-            // Locate job title links
-            const jobLinks = page.locator('a.title');
-            const count = await jobLinks.count();
+            // Use the new selector for job cards
+            const jobCards = page.locator('.sjw__tuple');
+            const count = await jobCards.count();
 
             if (count === 0) {
                 console.log("⚠️ No jobs found on this page.");
@@ -73,13 +75,27 @@ async function autoApply(page, context, keyword) {
                     console.log(`🎉 Reached target of ${targetApplyCount} successful applications!`);
                     break;
                 }
+
+                const jobCard = jobCards.nth(i);
+                // Use the new selector for the company name
+                const companyNameElement = jobCard.locator('.comp-name').first();
+                let companyName = '';
+                if (await companyNameElement.count() > 0) {
+                    companyName = (await companyNameElement.textContent()).trim();
+                }
+
+                if (companyName && blocklist.includes(companyName)) {
+                    console.log(`🚫 Skipping job at blocked company: ${companyName}`);
+                    continue;
+                }
                 
                 openedCount++;
                 console.log(`🖱️ Analyzing job ${openedCount}...`);
             
                 try {
-                    // Extract the URL instead of clicking, to completely avoid new-tab hanging issues
-                    const jobUrl = await jobLinks.nth(i).getAttribute('href');
+                    // The 'a.title' selector is still correct within the job card
+                    const jobLink = jobCard.locator('a.title');
+                    const jobUrl = await jobLink.getAttribute('href');
                     
                     if (!jobUrl) {
                         console.log("⏩ Could not find job URL, skipping.");
@@ -88,18 +104,38 @@ async function autoApply(page, context, keyword) {
 
                     const newPage = await context.newPage();
                     await newPage.goto(jobUrl, { waitUntil: 'domcontentloaded' });
-
                     await delay(2000, 4000);
 
-                    // Look strictly for an exact "Apply" button. Avoids "Apply on company website" or "Already Applied"
+                    // CORRECTED: Use .first() to avoid strict mode violation
+                    const companySiteButton = newPage.locator('#company-site-button').first();
+                    if (await companySiteButton.count() > 0 && await companySiteButton.isVisible()) {
+                        // Use a more robust selector for the company name on the details page
+                        const companyElement = newPage.locator('div[class*="jd-header-comp-name"] a').first();
+                        let companyNameToBlock = '';
+                        if (await companyElement.count() > 0) {
+                            companyNameToBlock = (await companyElement.textContent()).trim();
+                        }
+
+                        if (companyNameToBlock && !blocklist.includes(companyNameToBlock)) {
+                            console.log(`🚫 Found "Apply on company site" for: ${companyNameToBlock}. Adding to blocklist.`);
+                            blocklist.push(companyNameToBlock);
+                            const blocklistPath = path.resolve(__dirname, 'blocklist.js');
+                            const newBlocklistContent = `module.exports = ${JSON.stringify(blocklist, null, 4)};`;
+                            fs.writeFileSync(blocklistPath, newBlocklistContent, 'utf8');
+                        } else if (!companyNameToBlock) {
+                            console.log("⚠️ Could not determine company name to block.");
+                        }
+                        await newPage.close();
+                        continue;
+                    }
+
                     const applyBtn = newPage.locator('button', { hasText: /^\s*Apply\s*$/i }).first();
                     
                     if (await applyBtn.count() > 0 && await applyBtn.isVisible()) {
                         await applyBtn.click();
                         await delay(3000, 4000); // Wait slightly longer after applying
                         
-                        // Verify if application was actually successful (checks for success messages or button state change)
-                        const isSuccess = await newPage.locator('text=/successfully applied|applied successfully/i').count() > 0 ||
+                        const isSuccess = await newPage.locator('text=/^Applied to/i').count() > 0 ||
                                           await newPage.locator('text="Already Applied"').count() > 0;
                         
                         if (isSuccess) {

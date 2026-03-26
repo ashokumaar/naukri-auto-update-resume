@@ -12,6 +12,7 @@ const updateHeadline = require('./headline');
 const autoApply = require('./apply');
 const simulateActivity = require('./activity');
 const notify = require('./notify');
+const blocklist = require('./blocklist');
 
 // Apply the stealth plugin
 chromium.use(StealthPlugin());
@@ -75,7 +76,7 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
         let appliedCount = 0;
         let openedCount = 0;
         if (applyKeyword) {
-            const result = await autoApply(page, context, applyKeyword);
+            const result = await autoApply(page, context, applyKeyword, blocklist);
             appliedCount = result.appliedCount;
             openedCount = result.openedCount;
         }

@@ -10,7 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/ashokumaar/naukri-auto-update-resume.git"
   },
-  "keywords": ["automation", "playwright", "naukri", "job"],
+  "keywords": [
+    "automation",
+    "playwright",
+    "naukri",
+    "job"
+  ],
   "author": "Ashok Kumar V G",
   "license": "ISC",
   "bugs": {
@@ -18,9 +23,11 @@
   },
   "homepage": "https://github.com/ashokumaar/naukri-auto-update-resume#readme",
   "dependencies": {
-    "playwright": "^1.42.0",
-    "node-fetch": "^2.6.7",
+    "@google/genai": "^1.46.0",
     "dotenv": "^17.3.1",
+    "groq-sdk": "^1.1.2",
+    "node-fetch": "^2.6.7",
+    "playwright": "^1.42.0",
     "playwright-extra": "^4.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
