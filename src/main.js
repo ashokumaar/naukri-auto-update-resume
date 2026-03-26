@@ -30,14 +30,13 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
             '--no-sandbox',
             '--disable-dev-shm-usage',
             '--disable-blink-features=AutomationControlled',
-            '--window-size=1920,1080'
+            '--start-maximized' // Launch browser maximized
         ]
     });
 
     const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        viewport: { width: 1920, height: 1080 },
-        deviceScaleFactor: 1
+        viewport: null // Set viewport to null to use the browser's full size
     });
 
     await loadCookies(context, COOKIE_PATH);
