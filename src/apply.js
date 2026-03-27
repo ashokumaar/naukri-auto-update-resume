@@ -37,17 +37,17 @@ async function handleQuestionnaire(page, profileContent) { // Added profileConte
 
             console.log(`❓ Question ${questionCount + 1}: "${currentQuestion}"`);
 
-            // Check for radio button answers first
+            // Check for different types of answer inputs
             const radioOptions = page.locator('.ssrc__label');
-            // Check for a text input field
             const textInput = page.locator('div[contenteditable="true"]');
+            const checkboxOptions = page.locator('.mcc__label');
 
             let answer = '';
 
             if (await radioOptions.count() > 0) {
                 // --- Radio Button Question ---
                 const options = await radioOptions.allTextContents();
-                console.log(`🔍 Available options: ${options.join(', ')}`);
+                console.log(`🔍 Available options (Radio): ${options.join(', ')}`);
 
                 // Construct a prompt for Groq to choose the best option using the full profileContent
                 const prompt = `You are an expert job applicant. Based on the following profile, choose the best option for the question.
@@ -89,28 +89,21 @@ async function handleQuestionnaire(page, profileContent) { // Added profileConte
                 const prompt = `You are an expert job applicant. Extract a concise, direct answer from the provided profile for the given question.
 
                 **INSTRUCTIONS:**
-                1.  **Understand Question Variations**:
-                    *   "d.o.b" or "DOB" means "Date of Birth".
-                    *   "N.P" or "NP" means "Notice Period".
-                    *   "CTC" means "Cost to Company" or salary.
-                    *   "Exp" means "Experience".
-                    *   "GitHub", "LinkedIn", "LeetCode" refer to profile links.
-                2.  **Prioritize Sections**:
-                    *   For common factual questions (Notice Period, CTC, DOB, Location, Visa, Career Break, Profile Links), look FIRST in the "Specific Q&A" section.
-                    *   For experience in specific technologies (Java, Spring Boot, React, etc.), look in the "Skill Experience Breakdown" section.
-                3.  **Handle Yes/No Questions**: If the question asks "Do you have experience in X?" or "Are you proficient with Y?", answer "Yes" if you find X or Y in your profile. If you find it, start your answer with "Yes" and then add the relevant experience (e.g., "Yes, 3.5 years"). If not found, answer "No".
-                4.  **Default Response**: If you absolutely cannot find a relevant answer in the profile, respond with "N/A".
+                1.  **Understand Question Variations**: "d.o.b" means "Date of Birth", "N.P" means "Notice Period", "CTC" means salary.
+                2.  **Prioritize Sections**: For factual questions (Notice Period, CTC, DOB, Location), look in "Specific Q&A". For tech experience, look in "Skill Experience Breakdown".
+                3.  **Handle Yes/No Questions**: If asked "Do you have experience in X?", answer "Yes" if X is in your profile, then add the experience (e.g., "Yes, 3.5 years"). Otherwise, answer "No".
+                4.  **Default Response**: If you cannot find an answer, respond with "N/A".
 
                 **MY PROFILE:**
                 ${profileContent}
 
                 **QUESTION:** "${currentQuestion}"
 
-                Respond with ONLY the direct answer, nothing else. Do not add explanations or conversational text.
-                **Good Answer Examples**: "Yes, 3.5 years", "01-01-1995", "7.5", "N/A", "https://github.com/ashokumaar".`;
+                Respond with ONLY the direct answer. Do not add explanations.
+                **Good Answer Examples**: "Yes, 3.5 years", "01-01-1995", "7.5", "N/A".`;
 
                 const groqAnswer = await generateGroqContent(prompt);
-                await delay(5000, 8000); // Add delay AFTER the API call to respect rate limits
+                await delay(5000, 8000); // Add delay AFTER the API call
 
                 if (!groqAnswer) {
                     console.log("⚠️ Groq could not generate a text answer. Skipping.");
@@ -121,10 +114,41 @@ async function handleQuestionnaire(page, profileContent) { // Added profileConte
                 console.log(`🤖 Groq generated: "${answer}"`);
                 await textInput.fill(answer);
 
+            } else if (await checkboxOptions.count() > 0) {
+                // --- Multi-Select Checkbox Question ---
+                const options = await checkboxOptions.allTextContents();
+                console.log(`🔍 Available options (Checkbox): ${options.join(', ')}`);
+
+                const prompt = `You are an expert job applicant. Based on your profile, select all relevant options for the question.
+                Your current location is a high-priority preference.
+
+                MY PROFILE:
+                ${profileContent}
+
+                QUESTION: "${currentQuestion}"
+                OPTIONS: [${options.map(o => `"${o}"`).join(', ')}]
+
+                Respond with a comma-separated list of the options to select. For example: "Hyderabad (Narsingi), Chennai (Sirusiri)".`;
+
+                const groqAnswer = await generateGroqContent(prompt);
+                await delay(5000, 10000); // Add delay AFTER the API call
+
+                if (!groqAnswer) {
+                    console.log("⚠️ Groq could not generate answers for checkboxes. Skipping.");
+                } else {
+                    const selectedOptions = groqAnswer.split(',').map(opt => opt.trim().replace(/"/g, ''));
+                    console.log(`🤖 Groq chose: ${selectedOptions.join(', ')}`);
+                    for (const option of selectedOptions) {
+                        await page.locator(`label:has-text("${option}")`).click();
+                    }
+                }
+
             } else {
-                // This part can be expanded if we find other input types
-                console.log("⚠️ Could not find radio buttons or a text input. Skipping for now.");
-                return false; // Exit if we don't know how to handle it
+                // --- Unhandled Question Type ---
+                console.log("⚠️ Unhandled question type detected. Logging for manual review.");
+                const jobUrl = page.url();
+                fs.appendFileSync(path.resolve(__dirname, '../review_queue.txt'), `${jobUrl}\n`);
+                return false; // Exit and skip this job
             }
 
             // Click the "Save" or "Continue" button to submit the answer

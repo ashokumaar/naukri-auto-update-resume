@@ -70,8 +70,11 @@ Full Stack Java Developer with 3.5 years of experience building scalable enterpr
 ### Skill Experience Breakdown
 - **Java**: 3.5 years
 - **Spring Boot**: 3+ years
+- **Hibernate**: 3+ years
+- **SQL**: 3 years
 - **Microservices Architecture**: 3+ years
 - **ReactJS**: 1 year
+- **HTML, CSS, JavaScript**: 1 year
 - **RESTful APIs**: 3.5 years
 - **CI/CD (Jenkins, Gitlab, GitHub Actions)**: 3 years
 - **Docker**: 1 year
