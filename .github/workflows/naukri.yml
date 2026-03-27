@@ -20,10 +20,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: |
-          npm install
-          npx playwright install --with-deps
+      # - name: Install dependencies
+      #   run: |
+      #     npm install
+      #     npx playwright install --with-deps
 
       # 🔥 Random delay (0–60 mins → 7:00 to 8:00 AM IST)
       # - name: Add random delay
@@ -34,16 +34,16 @@ jobs:
       #     sleep $DELAY
 
       # 🚀 Run your bot
-      - name: Run Naukri bot
-        run: node src/main.js
-        env:
-          NAUKRI_EMAIL: ${{ secrets.NAUKRI_EMAIL }}
-          NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          NAUKRI_HEADLINE_EVEN: ${{ secrets.NAUKRI_HEADLINE_EVEN }}
-          NAUKRI_HEADLINE_ODD: ${{ secrets.NAUKRI_HEADLINE_ODD }}
-          JOB_SEARCH_KEYWORD: ${{ secrets.JOB_SEARCH_KEYWORD }}
+      # - name: Run Naukri bot
+      #   run: node src/main.js
+      #   env:
+      #     NAUKRI_EMAIL: ${{ secrets.NAUKRI_EMAIL }}
+      #     NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
+      #     TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      #     TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      #     NAUKRI_HEADLINE_EVEN: ${{ secrets.NAUKRI_HEADLINE_EVEN }}
+      #     NAUKRI_HEADLINE_ODD: ${{ secrets.NAUKRI_HEADLINE_ODD }}
+      #     JOB_SEARCH_KEYWORD: ${{ secrets.JOB_SEARCH_KEYWORD }}
 
       # ❌ Upload screenshot on failure
       - name: Upload screenshot on failure
