@@ -1,7 +1,4 @@
 const { delay } = require('./utils');
-//const { generateContent } = require('./AI/gemini');
-const { generateGroqContent } = require('./AI/groq');
-const generateContent = generateGroqContent;
 
 async function updateHeadline(page, newHeadline) {
     console.log(`📝 Updating headline to: "${newHeadline}"`);
@@ -25,23 +22,8 @@ async function updateHeadline(page, newHeadline) {
         const textarea = page.locator('textarea#resumeHeadlineTxt');
         await textarea.waitFor({ state: 'visible', timeout: 5000 });
 
-        let finalHeadline = newHeadline;
-
-        // If Grok API key is available, generate a new headline
-        if (process.env.GROQ_API_KEY) {
-            console.log('✨ Generating new headline with Groq...');
-            const prompt = `Generate a creative and professional headline for a ${process.env.JOB_TITLE || 'Software Engineer'} with ${process.env.YEARS_OF_EXPERIENCE || '5'} years of experience. The headline should be concise and suitable for a job portal profile. Only return the headline text.`;
-            const generatedHeadline = await generateContent(prompt);
-            if (generatedHeadline) {
-                finalHeadline = generatedHeadline.trim().replace(/"/g, ''); // Remove quotes
-                console.log(`✨ New headline: ${finalHeadline}`);
-            } else {
-                console.log('⚠️ Could not generate a new headline using Groq. Using the provided headline.');
-            }
-        }
-
-        // Clear and fill the new headline
-        await textarea.fill(finalHeadline);
+        // Clear and fill the new headline directly
+        await textarea.fill(newHeadline);
         await delay(1000, 2000);
 
         // Click save
