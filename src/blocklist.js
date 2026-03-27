@@ -9,5 +9,22 @@ module.exports = [
     "IBM",
     "Yash Technologies",
     "WSA Wonderful Sound for All",
-    "Qvantel Software Solutions"
+    "Qvantel Software Solutions",
+    "Dtcc",
+    "Massmutual Global Business Services India",
+    "Apple",
+    "iii Consultig",
+    "JPMorgan Chase Bank",
+    "Tech Stalwart Solution",
+    "Brand O Box",
+    "Billmart Fintech",
+    "Blossoms Solutions",
+    "Signitives",
+    "Palette69",
+    "Hanivisu",
+    "Currencies Direct",
+    "Maig Innovations",
+    "Smart Source",
+    "Instasmart Software Solutions",
+    "Grid Dynamics"
 ];

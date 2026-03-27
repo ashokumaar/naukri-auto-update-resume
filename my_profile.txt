@@ -15,7 +15,7 @@ Full Stack Java Developer with 3.5 years of experience building scalable enterpr
 - **Question**: How many years of experience in ReactJS?
   - **Answer**: I have around 1 year of experience developing web applications using ReactJS and integrating them with backend APIs.
 - **Question**: Are you proficient with cloud platforms?
-  - **Answer**: I have a foundational understanding of cloud platforms and hands-on experience with Google Kubernetes Engine (GKE) and AWS (EC2).
+  - **Answer**: Yes, I have a foundational understanding of cloud platforms and hands-on experience with Google Kubernetes Engine (GKE) and AWS (EC2).
 - **Question**: What is your experience with CI/CD?
   - **Answer**: I have experience implementing and using CI/CD pipelines with Jenkins, GitLab CI/CD, and GitHub Actions for automated builds, testing, and deployments.
 - **Question**: What is your current location?
@@ -28,6 +28,12 @@ Full Stack Java Developer with 3.5 years of experience building scalable enterpr
   - **Answer**: 7.5 LPA
 - **Question**: What is your expected CTC?
   - **Answer**: 12 LPA
+- **Question**: What is your Date of Birth (d.o.b or dob)?
+  - **Answer**: 15-07-1999
+- **Question**: What is your GitHub profile link?
+  - **Answer**: https://github.com/ashokumaar
+- **Question**: What is your LinkedIn profile link?
+  - **Answer**: https://www.linkedin.com/in/ashok-kumar-v-g-42994221a/
 - **Question**: What is your experience with AI-assisted coding or AI agents?
   - **Answer**: I actively utilize AI-assisted coding environments like GitHub Copilot for code generation, debugging, and improving development productivity. I leverage AI tools to generate code snippets, documentation, basic test cases, and for code refactoring and troubleshooting.
 - **Question**: Are you legally authorized to work in India?

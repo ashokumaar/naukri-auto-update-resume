@@ -3,6 +3,7 @@ require('dotenv').config();
 const { chromium } = require('playwright-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const fs = require('fs');
+const path = require('path'); // Import path module
 
 const { loadCookies, delay } = require('./utils');
 const login = require('./login');
@@ -19,10 +20,21 @@ chromium.use(StealthPlugin());
 
 const COOKIE_PATH = './session/cookies.json';
 const RESUME_PATH = './resume/Resume_AshokKumarVG.pdf';
+const MY_PROFILE_PATH = path.resolve(__dirname, '../my_profile.txt'); // Path to my_profile.txt
 
 console.log("EMAIL:", process.env.NAUKRI_EMAIL);
 
 (async () => {
+    // Load profile content from my_profile.txt
+    let profileContent = '';
+    try {
+        profileContent = fs.readFileSync(MY_PROFILE_PATH, 'utf8');
+        console.log("✅ Loaded profile content from my_profile.txt");
+    } catch (error) {
+        console.error(`❌ Error loading my_profile.txt: ${error.message}`);
+        process.exit(1);
+    }
+
     // Launch browser with stealth options
     const browser = await chromium.launch({
         headless: false,
@@ -75,7 +87,8 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
         let appliedCount = 0;
         let openedCount = 0;
         if (applyKeyword) {
-            const result = await autoApply(page, context, applyKeyword, blocklist);
+            // Pass profileContent to autoApply
+            const result = await autoApply(page, context, applyKeyword, blocklist, profileContent);
             appliedCount = result.appliedCount;
             openedCount = result.openedCount;
         }
