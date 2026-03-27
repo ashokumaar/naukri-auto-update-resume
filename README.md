@@ -7,9 +7,9 @@ This project automates the process of updating your resume on Naukri.com to keep
 -   **AI-Powered Applications**: Uses AI models from Groq (Llama 3.3) and Google (Gemini 2.0 Flash) to intelligently answer open-ended application questions.
 -   **Auto Job Apply**: Automatically searches and applies to relevant jobs based on a keyword.
 -   **Company Blocklist**: Avoids applying to specified companies using a blocklist.
--   **Headline Auto-Update**: (Optional) Rotates between two profile headlines daily.
+-   **Headline Auto-Update**: Rotates between two profile headlines daily to keep your profile visibly active.
+-   **Resume Upload**: Automatically uploads your latest resume.
 -   **Automated Login**: Logs into your Naukri account and manages sessions.
--   **Resume Upload**: (Optional) Automatically uploads your latest resume.
 -   **Activity Simulation**: Simulates user activity to appear active.
 -   **Scheduled Updates**: Uses GitHub Actions to run the script on a daily schedule.
 -   **Notifications**: Sends success or failure notifications to your Telegram.
@@ -22,7 +22,7 @@ This project automates the process of updating your resume on Naukri.com to keep
 3.  If not logged in, it uses your credentials to log in and saves the new cookies.
 4.  Simulates user activity on the homepage.
 5.  Navigates to the profile page.
-6.  (Optional) Updates your profile headline and uploads your resume.
+6.  Updates your profile headline and uploads your resume.
 7.  Searches for jobs using a specified keyword.
 8.  Applies to jobs, using AI (Groq/Gemini) and `my_profile.txt` for application questions, while avoiding companies in the blocklist.
 9.  Sends a notification to your Telegram chat to confirm the result.
@@ -83,6 +83,10 @@ NAUKRI_PASSWORD="your-naukri-password"
 # Job Search
 JOB_SEARCH_KEYWORD="Java spring boot developer"
 
+# Profile Headlines
+NAUKRI_HEADLINE_EVEN="Software Engineer with 4+ years of experience"
+NAUKRI_HEADLINE_ODD="Full Stack Developer specialized in JavaScript and Cloud"
+
 # AI API Keys (at least one is required for the apply feature)
 GROQ_API_KEY="your-groq-api-key"
 GEMINI_API_KEY="your-gemini-api-key"
@@ -90,10 +94,6 @@ GEMINI_API_KEY="your-gemini-api-key"
 # Telegram Notifications
 TELEGRAM_TOKEN="your-telegram-bot-token"
 TELEGRAM_CHAT_ID="your-telegram-chat-id"
-
-# Optional Headlines
-# NAUKRI_HEADLINE_EVEN="Software Engineer with 4+ years of experience"
-# NAUKRI_HEADLINE_ODD="Full Stack Developer specialized in JavaScript and Cloud"
 ```
 
 #### For GitHub Actions:
@@ -102,12 +102,12 @@ Configure these as secrets in your forked repository's **Settings > Secrets and 
 -   `NAUKRI_EMAIL`
 -   `NAUKRI_PASSWORD`
 -   `JOB_SEARCH_KEYWORD`
+-   `NAUKRI_HEADLINE_EVEN`
+-   `NAUKRI_HEADLINE_ODD`
 -   `GROQ_API_KEY`
 -   `GEMINI_API_KEY`
 -   `TELEGRAM_TOKEN`
 -   `TELEGRAM_CHAT_ID`
--   (Optional) `NAUKRI_HEADLINE_EVEN`
--   (Optional) `NAUKRI_HEADLINE_ODD`
 
 ### 5. Running the Script
 
