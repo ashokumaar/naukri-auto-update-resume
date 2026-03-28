@@ -72,11 +72,11 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
         // await page.waitForLoadState('domcontentloaded');
 
         // Step 4.5: Update Headline (based on Even/Odd day)
-        // const currentDay = new Date().getDate();
-        // const newHeadline = currentDay % 2 === 0 ? process.env.NAUKRI_HEADLINE_EVEN : process.env.NAUKRI_HEADLINE_ODD;
-        // if (newHeadline) {
-        //     await updateHeadline(page, newHeadline);
-        // }
+         const currentDay = new Date().getDate();
+         const newHeadline = currentDay % 2 === 0 ? process.env.NAUKRI_HEADLINE : process.env.NAUKRI_HEADLINE + '.';
+         if (newHeadline) {
+             await updateHeadline(page, newHeadline);
+         }
 
         // Step 5: upload resume (NO activity here)
         // console.log("Before upload URL:", page.url());
