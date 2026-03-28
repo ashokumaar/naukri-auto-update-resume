@@ -7,10 +7,9 @@ const { generateGroqContent } = require('./AI/groq');
  * Handles the chatbot-style questionnaire that appears after clicking "Apply".
  * @param {import('playwright').Page} page - The Playwright page object.
  * @param {string} profileContent - The content of my_profile.txt to use as context for Groq.
- * @param {string} jobUrl - The URL of the job being applied to.
  * @returns {Promise<boolean>} - True if the questionnaire was handled successfully, false otherwise.
  */
-async function handleQuestionnaire(page, profileContent, jobUrl) {
+async function handleQuestionnaire(page, profileContent) { // Added profileContent parameter
     console.log("🤖 Questionnaire detected. Starting AI-powered answering...");
 
     try {
@@ -147,9 +146,8 @@ async function handleQuestionnaire(page, profileContent, jobUrl) {
             } else {
                 // --- Unhandled Question Type ---
                 console.log("⚠️ Unhandled question type detected. Logging for manual review.");
-                if (jobUrl) {
-                    fs.appendFileSync(path.resolve(__dirname, '../review_queue.txt'), `${jobUrl}\n`);
-                }
+                const jobUrl = page.url();
+                fs.appendFileSync(path.resolve(__dirname, '../review_queue.txt'), `${jobUrl}\n`);
                 return false; // Exit and skip this job
             }
 
@@ -175,16 +173,12 @@ async function handleQuestionnaire(page, profileContent, jobUrl) {
 
     } catch (error) {
         console.error("❌ Error during questionnaire handling:", error.message);
-        if (jobUrl) {
-            console.log(`📝 Saving failed job URL for review: ${jobUrl}`);
-            fs.appendFileSync(path.resolve(__dirname, '../review_queue.txt'), `${jobUrl}\n`);
-        }
         return false;
     }
 }
 
 
-async function autoApply(page, context, keyword, blocklist, profileContent) {
+async function autoApply(page, context, keyword, blocklist, profileContent) { // Added profileContent parameter
     if (!keyword) {
         console.log("⏭️ No JOB_SEARCH_KEYWORD provided, skipping auto apply.");
         return { appliedCount: 0, openedCount: 0 };
@@ -274,18 +268,15 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
                 openedCount++;
                 console.log(`🖱️ Analyzing job ${openedCount}...`);
 
-                let jobUrl; // Define jobUrl here to be accessible in the catch block
                 try {
                     // The 'a.title' selector is still correct within the job card
                     const jobLink = jobCard.locator('a.title');
-                    jobUrl = await jobLink.getAttribute('href');
+                    const jobUrl = await jobLink.getAttribute('href');
 
                     if (!jobUrl) {
                         console.log("⏩ Could not find job URL, skipping.");
                         continue;
                     }
-
-                    console.log(`🔗 Opening job link: ${jobUrl}`);
 
                     const newPage = await context.newPage();
                     await newPage.goto(jobUrl, { waitUntil: 'domcontentloaded' });
@@ -328,7 +319,8 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
                             console.log("✅ Successfully applied for a job!");
                             appliedCount++;
                         } else if (isQuestionnaire) {
-                            const questionnaireSuccess = await handleQuestionnaire(newPage, profileContent, jobUrl);
+                            // Pass profileContent to handleQuestionnaire
+                            const questionnaireSuccess = await handleQuestionnaire(newPage, profileContent); // Passed profileContent
                             if (questionnaireSuccess) {
                                 console.log("✅ Application submitted via questionnaire.");
                                 appliedCount++;
@@ -346,10 +338,6 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
                     await delay(1000, 2000);
                 } catch (e) {
                     console.log(`❌ Failed to process job: ${e.message}`);
-                    if (jobUrl) {
-                        console.log(`📝 Saving failed job URL for review: ${jobUrl}`);
-                        fs.appendFileSync(path.resolve(__dirname, '../review_queue.txt'), `${jobUrl}\n`);
-                    }
                 }
             }
 
