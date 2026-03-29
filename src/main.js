@@ -16,7 +16,6 @@ const blocklist = require('./blocklist');
 
 chromium.use(StealthPlugin());
 
-// --- CONFIGURATION ---
 const COOKIE_PATH = './session/cookies.json';
 const RESUME_PATH = './resume/Resume_AshokKumarVG.pdf';
 const MY_PROFILE_PATH = path.resolve(__dirname, '../my_profile.txt');
@@ -24,8 +23,6 @@ const MY_PROFILE_PATH = path.resolve(__dirname, '../my_profile.txt');
 console.log("EMAIL:", process.env.NAUKRI_EMAIL ? "Loaded" : "Not Found");
 
 (async () => {
-    // --- SETUP ---
-    // Load the detailed profile content used by the AI for answering questions.
     let profileContent = '';
     try {
         profileContent = fs.readFileSync(MY_PROFILE_PATH, 'utf8');
@@ -48,14 +45,14 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL ? "Loaded" : "Not Found");
 
     const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        viewport: null // Use the browser's full size.
+        viewport: null
     });
 
     await loadCookies(context, COOKIE_PATH);
     const page = await context.newPage();
 
     try {
-        // --- AUTOMATION STEPS ---
+        // AUTOMATION STEPS
         await page.goto('https://www.naukri.com');
         await delay();
 
@@ -90,7 +87,7 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL ? "Loaded" : "Not Found");
             openedCount = result.openedCount;
         }
 
-        // --- SUCCESS NOTIFICATION ---
+        // SUCCESS NOTIFICATION
         let summaryMessage;
         if (applyKeyword) {
             if (appliedCount > 0) {
@@ -104,7 +101,6 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL ? "Loaded" : "Not Found");
         await notify(`✅ Naukri Update Success\n📅 ${new Date().toLocaleString()}` + summaryMessage);
 
     } catch (err) {
-        // --- ERROR HANDLING ---
         console.error(err);
         await page.screenshot({ path: 'error.png' });
         await notify("❌ Naukri Automation Failed");
