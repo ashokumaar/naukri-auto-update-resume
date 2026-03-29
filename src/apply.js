@@ -4,33 +4,34 @@ const path = require('path');
 const { generateGroqContent } = require('./AI/groq');
 
 /**
- * Handles the chatbot-style questionnaire that appears after clicking "Apply".
+ * Handles the chatbot-style questionnaire with improved stability and error handling.
  * @param {import('playwright').Page} page - The Playwright page object.
- * @param {string} profileContent - The content of my_profile.txt to use as context for Groq.
+ * @param {string} profileContent - The content of my_profile.txt.
  * @param {string} jobUrl - The URL of the job being applied to.
- * @returns {Promise<boolean>} - True if the questionnaire was handled successfully, false otherwise.
+ * @returns {Promise<boolean>} - True if successful, false otherwise.
  */
 async function handleQuestionnaire(page, profileContent, jobUrl) {
     console.log("🤖 Questionnaire detected. Starting AI-powered answering...");
 
     try {
-        // Wait for the chatbot container to be visible
         const questionnaireContainer = page.locator('.chatbot_DrawerContentWrapper');
         await questionnaireContainer.waitFor({ state: 'visible', timeout: 10000 });
 
         let questionCount = 0;
-        const maxQuestions = 10; // Safety break to avoid infinite loops
+        const maxQuestions = 15;
 
-        // Loop through the questions until the questionnaire is submitted or we hit the max limit
         while (questionCount < maxQuestions) {
-            // Wait for a new question from the bot
-            await page.waitForSelector('.botMsg.msg', { timeout: 15000 });
+            const botMessages = page.locator('.botMsg.msg span');
+            await botMessages.last().waitFor({ state: 'visible', timeout: 15000 });
+            const currentQuestion = (await botMessages.last().textContent() || '').trim();
+            const initialBotMessageCount = await botMessages.count();
 
-            // Get all bot messages and extract the last one as the current question
-            const questions = await page.locator('.botMsg.msg span').allTextContents();
-            const currentQuestion = questions[questions.length - 1].trim();
+            if (!currentQuestion) {
+                console.log("⚠️ Detected an empty question. Waiting for a valid question...");
+                await delay(2000);
+                continue;
+            }
 
-            // If the bot says thank you, the application is likely complete
             if (currentQuestion.toLowerCase().includes('thank you') || currentQuestion.toLowerCase().includes('thanks')) {
                 console.log("✅ Questionnaire completed (Thank you message detected).");
                 return true;
@@ -38,130 +39,184 @@ async function handleQuestionnaire(page, profileContent, jobUrl) {
 
             console.log(`❓ Question ${questionCount + 1}: "${currentQuestion}"`);
 
-            // Check for different types of answer inputs
-            const radioOptions = page.locator('.ssrc__label');
             const textInput = page.locator('div[contenteditable="true"]');
+            const radioOptions = page.locator('.ssrc__label');
             const checkboxOptions = page.locator('.mcc__label');
+            const chipOptions = page.locator('.chatbot_Chip');
+            let needsSaveButton = false;
 
-            let answer = '';
-
-            if (await radioOptions.count() > 0) {
-                // --- Radio Button Question ---
-                const options = await radioOptions.allTextContents();
-                console.log(`🔍 Available options (Radio): ${options.join(', ')}`);
-
-                // Construct a prompt for Groq to choose the best option using the full profileContent
-                const prompt = `You are an expert job applicant. Based on the following profile, choose the best option for the question.
-                Focus on the "Specific Q&A" section of the profile for direct answers.
-
-                MY PROFILE:
-                ${profileContent}
-
-                QUESTION: "${currentQuestion}"
-                OPTIONS: [${options.map(o => `"${o}"`).join(', ')}]
-
-                Your answer should be ONLY the text of the best option from the list. For example: "15 days or less".`;
-
-                // Get the answer from Groq
-                const groqAnswer = await generateGroqContent(prompt);
-                await delay(5000, 10000); // Add delay AFTER the API call to respect rate limits
-
-                if (!groqAnswer) {
-                    console.log("⚠️ Groq could not generate an answer. Attempting to skip question.");
-                    // Try to find and click a skip button if available
-                    const skipButton = page.locator('label:has-text("Skip this question")');
-                    if (await skipButton.count() > 0) {
-                        await skipButton.first().click();
-                    } else {
-                        return false; // No skip option, fail safely
-                    }
-                } else {
-                    answer = groqAnswer.replace(/"/g, '').trim();
-                    console.log(`🤖 Groq chose: "${answer}"`);
-                    // Click the label corresponding to the chosen answer
-                    await page.locator(`label:has-text("${answer}")`).first().click();
-                }
-
-            } else if (await textInput.count() > 0) {
-                // --- Text Input Question ---
+            if (await textInput.isVisible({ timeout: 1000 })) {
+                needsSaveButton = true;
                 console.log("🔍 Text input detected. Generating AI answer...");
 
-                // Construct a prompt for Groq to generate a text answer using the full profileContent
-                const prompt = `You are an expert job applicant. Extract a concise, direct answer from the provided profile for the given question.
+                const prompt = `You are an expert job applicant. Your task is to extract a concise, direct answer from the provided profile for the given question.
 
                 **INSTRUCTIONS:**
-                1.  **Understand Question Variations**: "d.o.b" means "Date of Birth", "N.P" means "Notice Period", "CTC" means salary.
-                2.  **Prioritize Sections**: For factual questions (Notice Period, CTC, DOB, Location), look in "Specific Q&A". For tech experience, look in "Skill Experience Breakdown".
-                3.  **Handle Yes/No Questions**: If asked "Do you have experience in X?", answer "Yes" if X is in your profile, then add the experience (e.g., "Yes, 3.5 years"). Otherwise, answer "No".
-                4.  **Default Response**: If you cannot find an answer, respond with "N/A".
+                1.  **Analyze Holistically**: Read the entire profile to understand the user's skills and experience. Infer skills from job titles (e.g., a "Java Backend Developer" knows "REST APIs").
+                2.  **Direct Extraction**: If the question asks for years of experience in a skill (e.g., "Java"), find the number in the profile and respond with only that (e.g., "3.5 years").
+                3.  **No Conversational Text**: Do not add prefixes like "Yes," or any other conversational text.
+                4.  **"N/A" as a Last Resort**: Only if the skill is completely unrelated to the profile and cannot be reasonably inferred, respond with the single word: "N/A".
 
                 **MY PROFILE:**
                 ${profileContent}
 
                 **QUESTION:** "${currentQuestion}"
 
-                Respond with ONLY the direct answer. Do not add explanations.
-                **Good Answer Examples**: "Yes, 3.5 years", "01-01-1995", "7.5", "N/A".`;
+                Respond with ONLY the direct answer or "N/A".`;
 
                 const groqAnswer = await generateGroqContent(prompt);
-                await delay(5000, 8000); // Add delay AFTER the API call
+                await delay(5000, 8000);
 
                 if (!groqAnswer) {
                     console.log("⚠️ Groq could not generate a text answer. Skipping.");
                     return false;
                 }
 
-                answer = groqAnswer.replace(/"/g, '').trim();
+                const answer = groqAnswer.replace(/"/g, '').trim();
                 console.log(`🤖 Groq generated: "${answer}"`);
+
                 await textInput.fill(answer);
 
-            } else if (await checkboxOptions.count() > 0) {
-                // --- Multi-Select Checkbox Question ---
+            } else if (await checkboxOptions.first().isVisible({ timeout: 1000 })) {
+                needsSaveButton = true;
                 const options = await checkboxOptions.allTextContents();
                 console.log(`🔍 Available options (Checkbox): ${options.join(', ')}`);
-
                 const prompt = `You are an expert job applicant. Based on your profile, select all relevant options for the question.
-                Your current location is a high-priority preference.
-
                 MY PROFILE:
                 ${profileContent}
-
                 QUESTION: "${currentQuestion}"
                 OPTIONS: [${options.map(o => `"${o}"`).join(', ')}]
-
-                Respond with a comma-separated list of the options to select. For example: "Hyderabad (Narsingi), Chennai (Sirusiri)".`;
-
+                Respond with a comma-separated list of the options to select.`;
                 const groqAnswer = await generateGroqContent(prompt);
-                await delay(5000, 10000); // Add delay AFTER the API call
-
                 if (!groqAnswer) {
-                    console.log("⚠️ Groq could not generate answers for checkboxes. Skipping.");
-                } else {
-                    const selectedOptions = groqAnswer.split(',').map(opt => opt.trim().replace(/"/g, ''));
-                    console.log(`🤖 Groq chose: ${selectedOptions.join(', ')}`);
-                    for (const option of selectedOptions) {
-                        await page.locator(`label:has-text("${option}")`).click();
+                    console.log("⚠️ Groq could not generate answers for checkboxes. Skipping job.");
+                    return false;
+                }
+                const selectedOptions = groqAnswer.split(',').map(opt => opt.trim().replace(/"/g, ''));
+                console.log(`🤖 Groq chose: ${selectedOptions.join(', ')}`);
+                let allOptionsFoundAndClicked = true;
+                const allLabelLocators = await page.locator('label.mcc__label').all();
+                for (const optionToClick of selectedOptions) {
+                    let foundMatch = false;
+                    for (const label of allLabelLocators) {
+                        const labelText = await label.textContent();
+                        if (labelText && labelText.trim().toLowerCase() === optionToClick.toLowerCase()) {
+                            await label.click();
+                            console.log(`✅ Clicked checkbox label: "${optionToClick}"`);
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+                    if (!foundMatch) {
+                        console.log(`⚠️ Could not find a clickable label for option: "${optionToClick}"`);
+                        allOptionsFoundAndClicked = false;
+                        break;
                     }
                 }
-
-            } else {
-                // --- Unhandled Question Type ---
-                console.log("⚠️ Unhandled question type detected. Logging for manual review.");
-                if (jobUrl) {
-                    fs.appendFileSync(path.resolve(__dirname, '../review_queue.txt'), `${jobUrl}\n`);
+                if (!allOptionsFoundAndClicked) {
+                    console.error("❌ Failed to select one or more checkbox options. Aborting.");
+                    return false;
                 }
-                return false; // Exit and skip this job
+            } else if (await radioOptions.first().isVisible({ timeout: 1000 })) {
+                needsSaveButton = true;
+                const options = await radioOptions.allTextContents();
+                console.log(`🔍 Available options (Radio): ${options.join(', ')}`);
+                const prompt = `You are an expert job applicant. Based on your profile, choose the single best option for the question.
+                **INSTRUCTIONS:**
+                1.  **Analyze**: Read the question and the options carefully.
+                2.  **Select**: Choose the most fitting option from the list based on the profile.
+                3.  **Respond**: Your response must be ONLY the exact text of the chosen option. Do not add any other words, explanations, or punctuation.
+                **MY PROFILE:**
+                ${profileContent}
+                **QUESTION:** "${currentQuestion}"
+                **OPTIONS:** [${options.map(o => `"${o}"`).join(', ')}]
+                Your response must be one of: [${options.map(o => `"${o}"`).join(', ')}].`;
+
+                const groqAnswer = await generateGroqContent(prompt);
+                await delay(5000, 10000);
+                if (!groqAnswer) {
+                    console.log("⚠️ Groq could not generate an answer. Skipping.");
+                    return false;
+                }
+                const answer = groqAnswer.replace(/"/g, '').trim();
+                console.log(`🤖 Groq chose: "${answer}"`);
+
+                const isValidOption = options.some(opt => opt.trim().toLowerCase() === answer.toLowerCase());
+                if (!isValidOption) {
+                    console.error(`❌ AI generated an invalid option: "${answer}". Valid options are: [${options.join(', ')}]. Aborting.`);
+                    return false;
+                }
+
+                await page.locator(`label:has-text("${answer}")`).first().click();
+
+            } else if (await chipOptions.first().isVisible({ timeout: 1000 })) {
+                needsSaveButton = false;
+                const options = await chipOptions.allTextContents();
+                console.log(`🔍 Available options (Chips): ${options.join(', ')}`);
+                const prompt = `You are an expert job applicant. Based on your profile, choose the single best option for the question.
+                **INSTRUCTIONS:**
+                1.  **Analyze**: Read the question and the options carefully.
+                2.  **Select**: Choose the most fitting option from the list based on the profile.
+                3.  **Respond**: Your response must be ONLY the exact text of the chosen option. Do not add any other words, explanations, or punctuation.
+                **MY PROFILE:**
+                ${profileContent}
+                **QUESTION:** "${currentQuestion}"
+                **OPTIONS:** [${options.map(o => `"${o}"`).join(', ')}]
+                Your response must be one of: [${options.map(o => `"${o}"`).join(', ')}].`;
+
+                const groqAnswer = await generateGroqContent(prompt);
+                if (!groqAnswer) {
+                    console.log("⚠️ Groq could not generate an answer for chips. Skipping.");
+                    return false;
+                }
+                const answer = groqAnswer.replace(/"/g, '').trim();
+                console.log(`🤖 Groq chose: "${answer}"`);
+
+                const isValidOption = options.some(opt => opt.trim().toLowerCase() === answer.toLowerCase());
+                if (!isValidOption) {
+                    console.error(`❌ AI generated an invalid option: "${answer}". Valid options are: [${options.join(', ')}]. Aborting.`);
+                    return false;
+                }
+
+                await page.locator('.chatbot_Chip', { hasText: new RegExp(`^${answer}$`, 'i') }).first().click();
+            } else {
+                console.log("⚠️ Unhandled question type detected. Logging for manual review.");
+                if (jobUrl) fs.appendFileSync(path.resolve(__dirname, '../review_queue.txt'), `${jobUrl}\n`);
+                return false;
             }
 
-            // Click the "Save" or "Continue" button to submit the answer
-            const saveButton = page.locator('.sendMsgbtn_container .sendMsg');
-            await saveButton.click();
-            console.log("✅ Answer submitted.");
+            if (needsSaveButton) {
+                const saveButton = page.locator('.sendMsgbtn_container .sendMsg');
+                if (await saveButton.isVisible()) {
+                    await saveButton.click({ force: true });
+                    console.log("✅ Answer submitted.");
+                } else {
+                    console.log("✅ Answer submitted (no save button needed).");
+                }
+            } else {
+                console.log("✅ Answer submitted (auto-submit).");
+            }
 
+            await delay(2000);
             questionCount++;
-            await delay(3000, 5000); // Wait for the next question to appear
 
-            // Check if the application was successful after submitting an answer
+            try {
+                await page.waitForFunction(
+                    (initialCount) => document.querySelectorAll('.botMsg.msg span').length > initialCount,
+                    initialBotMessageCount,
+                    { timeout: 15000 }
+                );
+            } catch (e) {
+                console.log("⏳ Timeout waiting for bot's reaction. Checking for success before failing...");
+                const isSuccess = await page.locator('text=/^Applied to/i').count() > 0 ||
+                                  await page.locator('text="Already Applied"').count() > 0;
+                if (isSuccess) {
+                    console.log("✅ Application successful after timeout.");
+                    return true;
+                }
+                throw new Error("Timeout waiting for the bot to respond after submitting an answer.");
+            }
+
             const isSuccess = await page.locator('text=/^Applied to/i').count() > 0 ||
                               await page.locator('text="Already Applied"').count() > 0;
             if (isSuccess) {
@@ -195,24 +250,20 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
     let openedCount = 0;
 
     try {
-        // Navigate to homepage to access the global search bar
         await page.goto('https://www.naukri.com/', { waitUntil: 'domcontentloaded' });
         await delay(2000, 4000);
 
-        // Expand search bar if it's minimized (placeholder visible)
         const searchPlaceholder = page.locator('.nI-gNb-sb__placeholder');
         if (await searchPlaceholder.count() > 0 && await searchPlaceholder.isVisible()) {
             await searchPlaceholder.click();
             await delay(1000, 2000);
         }
 
-        // 1. Enter Keyword
         const keywordInput = page.locator('input[placeholder*="Enter keyword"]');
         await keywordInput.waitFor({ state: 'visible', timeout: 5000 });
         await keywordInput.fill(keyword);
         await delay(1000, 1500);
 
-        // 2. Select Experience (3 years)
         const expDropdown = page.locator('#experienceDD');
         if (await expDropdown.isVisible()) {
             await expDropdown.click();
@@ -221,27 +272,24 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
             await delay(1000, 1500);
         }
 
-        // 3. Enter Location (Hyderabad)
         const locationInput = page.locator('input[placeholder*="Enter location"]');
         if (await locationInput.isVisible()) {
             await locationInput.fill("Hyderabad");
-            await delay(1500, 2000); // Give time for UI state to process the location text
+            await delay(1500, 2000);
         }
 
-        // 4. Click Search Button
         const searchBtn = page.locator('.nI-gNb-sb__icon-wrapper');
         await searchBtn.click();
 
         await page.waitForLoadState('domcontentloaded');
         await delay(4000, 6000);
 
-        const targetApplyCount = 5; // Number of successful applications desired
+        const targetApplyCount = 10;
         console.log(`🎯 Goal: Successfully apply to ${targetApplyCount} jobs`);
 
         let hasNextPage = true;
 
         while (appliedCount < targetApplyCount && hasNextPage) {
-            // Use the new selector for job cards
             const jobCards = page.locator('.sjw__tuple');
             const count = await jobCards.count();
 
@@ -259,7 +307,6 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
                 }
 
                 const jobCard = jobCards.nth(i);
-                // Use the new selector for the company name
                 const companyNameElement = jobCard.locator('.comp-name').first();
                 let companyName = '';
                 if (await companyNameElement.count() > 0) {
@@ -274,9 +321,8 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
                 openedCount++;
                 console.log(`🖱️ Analyzing job ${openedCount}...`);
 
-                let jobUrl; // Define jobUrl here to be accessible in the catch block
+                let jobUrl;
                 try {
-                    // The 'a.title' selector is still correct within the job card
                     const jobLink = jobCard.locator('a.title');
                     jobUrl = await jobLink.getAttribute('href');
 
@@ -291,10 +337,8 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
                     await newPage.goto(jobUrl, { waitUntil: 'domcontentloaded' });
                     await delay(2000, 4000);
 
-                    // CORRECTED: Use .first() to avoid strict mode violation
                     const companySiteButton = newPage.locator('#company-site-button').first();
                     if (await companySiteButton.count() > 0 && await companySiteButton.isVisible()) {
-                        // Use a more robust selector for the company name on the details page
                         const companyElement = newPage.locator('div[class*="jd-header-comp-name"] a').first();
                         let companyNameToBlock = '';
                         if (await companyElement.count() > 0) {
@@ -316,9 +360,8 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
 
                     if (await applyBtn.count() > 0 && await applyBtn.isVisible()) {
                         await applyBtn.click();
-                        await delay(3000, 4000); // Wait slightly longer after applying
+                        await delay(3000, 4000);
 
-                        // Check for immediate success OR a questionnaire
                         const isSuccess = await newPage.locator('text=/^Applied to/i').count() > 0 ||
                                           await newPage.locator('text="Already Applied"').count() > 0;
 
@@ -353,7 +396,6 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
                 }
             }
 
-            // Try to navigate to the Next page if target isn't met
             if (appliedCount < targetApplyCount) {
                 const nextBtn = page.locator('a:has-text("Next")').last();
                 if (await nextBtn.count() > 0 && await nextBtn.isVisible()) {
