@@ -1,9 +1,8 @@
 require('dotenv').config();
-// Use playwright-extra to apply stealth plugin
 const { chromium } = require('playwright-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const fs = require('fs');
-const path = require('path'); // Import path module
+const path = require('path');
 
 const { loadCookies, delay } = require('./utils');
 const login = require('./login');
@@ -15,17 +14,18 @@ const simulateActivity = require('./activity');
 const notify = require('./notify');
 const blocklist = require('./blocklist');
 
-// Apply the stealth plugin
 chromium.use(StealthPlugin());
 
+// --- CONFIGURATION ---
 const COOKIE_PATH = './session/cookies.json';
 const RESUME_PATH = './resume/Resume_AshokKumarVG.pdf';
-const MY_PROFILE_PATH = path.resolve(__dirname, '../my_profile.txt'); // Path to my_profile.txt
+const MY_PROFILE_PATH = path.resolve(__dirname, '../my_profile.txt');
 
-console.log("EMAIL:", process.env.NAUKRI_EMAIL);
+console.log("EMAIL:", process.env.NAUKRI_EMAIL ? "Loaded" : "Not Found");
 
 (async () => {
-    // Load profile content from my_profile.txt
+    // --- SETUP ---
+    // Load the detailed profile content used by the AI for answering questions.
     let profileContent = '';
     try {
         profileContent = fs.readFileSync(MY_PROFILE_PATH, 'utf8');
@@ -35,65 +35,62 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
         process.exit(1);
     }
 
-    // Launch browser with stealth options
+    // Launch a browser instance with stealth settings to avoid detection.
     const browser = await chromium.launch({
         headless: false,
         args: [
             '--no-sandbox',
             '--disable-dev-shm-usage',
             '--disable-blink-features=AutomationControlled',
-            '--start-maximized' // Launch browser maximized
+            '--start-maximized'
         ]
     });
 
     const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        viewport: null // Set viewport to null to use the browser's full size
+        viewport: null // Use the browser's full size.
     });
 
     await loadCookies(context, COOKIE_PATH);
-
     const page = await context.newPage();
 
     try {
+        // --- AUTOMATION STEPS ---
         await page.goto('https://www.naukri.com');
         await delay();
 
-        // 🔐 Step 1: login or skip
+        // 1. Log in if cookies are invalid or missing.
         await login(page, context, process.env.NAUKRI_EMAIL, process.env.NAUKRI_PASSWORD, COOKIE_PATH);
 
-        // 📈 Step 2: simulate activity ONLY ON HOMEPAGE
+        // 2. Simulate some random user activity on the homepage to appear more human.
         await simulateActivity(page);
 
-        // 🔥 Step 3: go to profile
+        // 3. Navigate to the user's profile page.
         await goToProfile(page);
+        await page.waitForLoadState('domcontentloaded');
 
-        // 🔥 Step 4: ensure profile loaded
-        // await page.waitForLoadState('domcontentloaded');
+        // 4. Update profile headline with a minor change to trigger "profile updated" status.
+        //    (Appends a dot on odd days, removes it on even days).
+        const currentDay = new Date().getDate();
+        const newHeadline = currentDay % 2 === 0 ? process.env.NAUKRI_HEADLINE : process.env.NAUKRI_HEADLINE + '.';
+        if (newHeadline) {
+            await updateHeadline(page, newHeadline);
+        }
 
-        // Step 4.5: Update Headline (based on Even/Odd day)
-         const currentDay = new Date().getDate();
-         const newHeadline = currentDay % 2 === 0 ? process.env.NAUKRI_HEADLINE : process.env.NAUKRI_HEADLINE + '.';
-         if (newHeadline) {
-             await updateHeadline(page, newHeadline);
-         }
+        // 5. Re-upload the resume to ensure it's the latest version on the profile.
+        await uploadResume(page, RESUME_PATH);
 
-        // Step 5: upload resume (NO activity here)
-        // console.log("Before upload URL:", page.url());
-        // await uploadResume(page, RESUME_PATH);
-
-        // 🎯 Step 5.5: Auto Apply to Jobs
+        // 6. Automatically search for and apply to jobs based on the keyword in the .env file.
         const applyKeyword = process.env.JOB_SEARCH_KEYWORD;
         let appliedCount = 0;
         let openedCount = 0;
         if (applyKeyword) {
-            // Pass profileContent to autoApply
             const result = await autoApply(page, context, applyKeyword, blocklist, profileContent);
             appliedCount = result.appliedCount;
             openedCount = result.openedCount;
         }
 
-        // 📩 Step 6: notify success
+        // --- SUCCESS NOTIFICATION ---
         let summaryMessage;
         if (applyKeyword) {
             if (appliedCount > 0) {
@@ -102,17 +99,15 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL);
                 summaryMessage = `\n🚫 No new jobs found to apply. Opened ${openedCount} jobs.`;
             }
         } else {
-            summaryMessage = '';
+            summaryMessage = '\n⏩ Auto-apply was skipped (no keyword provided).';
         }
         await notify(`✅ Naukri Update Success\n📅 ${new Date().toLocaleString()}` + summaryMessage);
 
     } catch (err) {
+        // --- ERROR HANDLING ---
         console.error(err);
-
         await page.screenshot({ path: 'error.png' });
-
         await notify("❌ Naukri Automation Failed");
-
         process.exit(1);
     } finally {
         await browser.close();

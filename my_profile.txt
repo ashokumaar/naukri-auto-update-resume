@@ -9,9 +9,9 @@ Full Stack Java Developer with 3.5 years of experience building scalable enterpr
 - **Question**: How many years of experience in Java?
   - **Answer**: I have over 3.5 years of experience in Java development, including Java 8 and Java 21.
 - **Question**: How many years of experience in Spring Boot?
-  - **Answer**: I have over 3 years of hands-on experience with Spring Boot, developing RESTful APIs and microservices.
+  - **Answer**: I have 3.5 years of hands-on experience with Spring Boot, developing RESTful APIs and microservices.
 - **Question**: How many years of experience in Microservices?
-  - **Answer**: I have over 3 years of experience designing and building applications using a microservices architecture.
+  - **Answer**: I have 3.5 years of experience designing and building applications using a microservices architecture.
 - **Question**: How many years of experience in ReactJS?
   - **Answer**: I have around 1 year of experience developing web applications using ReactJS and integrating them with backend APIs.
 - **Question**: Are you proficient with cloud platforms?
@@ -68,20 +68,24 @@ Full Stack Java Developer with 3.5 years of experience building scalable enterpr
 
 ---
 ### Skill Experience Breakdown
-- **Java**: 3.5 years
-- **Spring Boot**: 3+ years
-- **Hibernate**: 3+ years
-- **SQL**: 3 years
-- **Microservices Architecture**: 3+ years
-- **ReactJS**: 1 year
-- **HTML, CSS, JavaScript**: 1 year
-- **RESTful APIs**: 3.5 years
-- **CI/CD (Jenkins, Gitlab, GitHub Actions)**: 3 years
-- **Docker**: 1 year
-- **Kubernetes (GKE)**: 1 year
-- **AWS**: 1 year
-- **Databases (MySQL, Oracle)**: 3.5 years
+- **Java, Spring Boot, Hibernate, RESTful APIs**: 3.5 years
+- **Microservices Architecture**: 3.5 years
+- **HTML, CSS, JavaScript, ReactJS**: 1 year
+- **CI/CD (Jenkins, Gitlab, GitHub Actions)**: 3.5 years
+- **Docker, Kubernetes (GKE)**: 2 years
+- **AWS, Google Cloud Platform (GCP), Openshift**: 1 year
+- **Databases (MySQL, Oracle, SQL)**: 3.5 years
 - **Git**: 3.5 years
+
+---
+### Tools and Technologies
+- **IDEs**: IntelliJ IDEA, VS Code, Eclipse
+- **Version Control**: Git, GitLab, GitHub
+- **API Tools**: Postman, Swagger
+- **CI/CD**: Jenkins, GitLab CI, GitHub Actions
+- **Code Quality**: SonarQube, SonarLint
+- **Project Management**: Jira, Confluence
+- **Containerization**: Docker, Kubernetes
 
 ---
 ### Domain Experience

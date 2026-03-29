@@ -1,3 +1,15 @@
 # Job URLs that need manual review due to unhandled questionnaire components
 https://www.naukri.com/job-listings-nbbl-associate-application-development-java-developer-national-payments-corporation-of-india-npci-hyderabad-chennai-mumbai-all-areas-2-to-5-years-260326025533
 https://www.naukri.com/job-listings-java-developer-ab-pan-india-infosys-kolkata-hyderabad-bengaluru-3-to-8-years-300525034387
+https://www.naukri.com/job-listings-java-developer-n-bengaluru-infosys-hyderabad-chennai-bengaluru-3-to-8-years-230525027128 // chips in row (YES NO)
+https://www.naukri.com/job-listings-backend-java-developer-info-edge-mumbai-hyderabad-bengaluru-1-to-8-years-180326029516 // skip this question
+https://www.naukri.com/job-listings-java-developer-national-payments-corporation-of-india-npci-mumbai-hyderabad-chennai-2-to-5-years-250326013018
+https://www.naukri.com/job-listings-java-full-stack-angular-pan-india-infosys-infosys-hyderabad-3-to-8-years-020326030411
+https://www.naukri.com/job-listings-java-developer-locomidstech-hyderabad-1-to-3-years-141125501337
+https://www.naukri.com/job-listings-aladdin-alladin-developer-acme-services-noida-kolkata-hyderabad-ahmedabad-gurugram-chennai-bengaluru-mumbai-all-areas-india-3-to-8-years-250326024666
+https://www.naukri.com/job-listings-java-full-stack-angular-pan-india-infosys-infosys-hyderabad-3-to-8-years-020326030386
+https://www.naukri.com/job-listings-nbbl-associate-application-development-java-developer-national-payments-corporation-of-india-npci-hyderabad-chennai-mumbai-all-areas-2-to-5-years-260326025533
+https://www.naukri.com/job-listings-java-back-end-developer-alike-thoughts-hyderabad-pune-chennai-3-to-8-years-270226038883
+https://www.naukri.com/job-listings-java-fullstack-angular-3-5-years-infosys-hyderabad-3-to-5-years-020326030107
+https://www.naukri.com/job-listings-java-full-stack-developer-angular-3-5-years-only-female-infosys-hyderabad-3-to-5-years-030326031451
+https://www.naukri.com/job-listings-java-full-stack-developer-angular-3-5-years-infosys-infosys-hyderabad-ahmedabad-bengaluru-3-to-5-years-110326018414
