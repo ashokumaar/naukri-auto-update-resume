@@ -88,6 +88,7 @@ async function handleQuestionnaire(page, profileContent, jobUrl) {
                 OPTIONS: [${options.map(o => `"${o}"`).join(', ')}]
                 Respond with a comma-separated list of the options to select.`;
                 const groqAnswer = await generateGroqContent(prompt);
+                await delay(2000, 3000);
                 if (!groqAnswer) {
                     console.log("⚠️ Groq could not generate answers for checkboxes. Skipping job.");
                     return false;
@@ -95,6 +96,7 @@ async function handleQuestionnaire(page, profileContent, jobUrl) {
                 const selectedOptions = groqAnswer.split(',').map(opt => opt.trim().replace(/"/g, ''));
                 console.log(`🤖 Groq chose: ${selectedOptions.join(', ')}`);
                 let allOptionsFoundAndClicked = true;
+                await delay(1000);
                 const allLabelLocators = await page.locator('label.mcc__label').all();
                 for (const optionToClick of selectedOptions) {
                     let foundMatch = false;
@@ -370,11 +372,13 @@ async function autoApply(page, context, keyword, blocklist, profileContent) {
                         if (isSuccess) {
                             console.log("✅ Successfully applied for a job!");
                             appliedCount++;
+                            console.log("As of now", appliedCount," jobs were applied successfully");
                         } else if (isQuestionnaire) {
                             const questionnaireSuccess = await handleQuestionnaire(newPage, profileContent, jobUrl);
                             if (questionnaireSuccess) {
                                 console.log("✅ Application submitted via questionnaire.");
                                 appliedCount++;
+                                console.log("As of now", appliedCount," jobs were applied successfully");
                             } else {
                                 console.log("⚠️ Failed to complete questionnaire. Skipping job.");
                             }
