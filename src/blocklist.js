@@ -114,5 +114,14 @@ module.exports = [
     "Tide Software",
     "Candescent",
     "Sixpath Technologies",
-    "Birlasoft"
+    "Birlasoft",
+    "The Depository Trust & Clearing Corporation (DTCC)",
+    "Nityo Infotech",
+    "Virtualware Innovations",
+    "TAO Digital",
+    "Model N",
+    "Amgen Inc",
+    "[x]cube LABS",
+    "DAZN",
+    "Capgemini"
 ];

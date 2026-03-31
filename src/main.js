@@ -4,6 +4,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const fs = require('fs');
 const path = require('path');
 
+const { setupLogger } = require('./logger');
 const { loadCookies, delay } = require('./utils');
 const login = require('./login');
 const { goToProfile } = require('./navigation');
@@ -13,6 +14,8 @@ const autoApply = require('./apply');
 const simulateActivity = require('./activity');
 const notify = require('./notify');
 const blocklist = require('./blocklist');
+
+setupLogger();
 
 chromium.use(StealthPlugin());
 
