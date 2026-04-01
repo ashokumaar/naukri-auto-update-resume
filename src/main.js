@@ -12,7 +12,7 @@ const uploadResume = require('./upload');
 const updateHeadline = require('./headline');
 const autoApply = require('./apply');
 const simulateActivity = require('./activity');
-const notify = require('./notify');
+const { sendTelegram, sendEmailWithAttachment } = require('./notify');
 const blocklist = require('./blocklist');
 
 setupLogger();
@@ -26,35 +26,34 @@ const MY_PROFILE_PATH = path.resolve(__dirname, '../my_profile.txt');
 console.log("EMAIL:", process.env.NAUKRI_EMAIL ? "Loaded" : "Not Found");
 
 (async () => {
-    let profileContent = '';
+    let browser;
+    let page;
+    let summaryMessage = 'Bot run initiated, but an unexpected error occurred early.';
+    let success = false;
+
     try {
-        profileContent = fs.readFileSync(MY_PROFILE_PATH, 'utf8');
+        const profileContent = fs.readFileSync(MY_PROFILE_PATH, 'utf8');
         console.log("✅ Loaded profile content from my_profile.txt");
-    } catch (error) {
-        console.error(`❌ Error loading my_profile.txt: ${error.message}`);
-        process.exit(1);
-    }
 
-    // Launch a browser instance with stealth settings to avoid detection.
-    const browser = await chromium.launch({
-        headless: false,
-        args: [
-            '--no-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-blink-features=AutomationControlled',
-            '--start-maximized'
-        ]
-    });
+        // Launch a browser instance with stealth settings to avoid detection.
+        browser = await chromium.launch({
+            headless: false,
+            args: [
+                '--no-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-blink-features=AutomationControlled',
+                '--start-maximized'
+            ]
+        });
 
-    const context = await browser.newContext({
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        viewport: null
-    });
+        const context = await browser.newContext({
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            viewport: null
+        });
 
-    await loadCookies(context, COOKIE_PATH);
-    const page = await context.newPage();
+        await loadCookies(context, COOKIE_PATH);
+        page = await context.newPage();
 
-    try {
         // AUTOMATION STEPS
         await page.goto('https://www.naukri.com');
         await delay();
@@ -90,25 +89,42 @@ console.log("EMAIL:", process.env.NAUKRI_EMAIL ? "Loaded" : "Not Found");
             openedCount = result.openedCount;
         }
 
-        // SUCCESS NOTIFICATION
-        let summaryMessage;
+        // SUCCESS SUMMARY
+        success = true;
+        const dateString = new Date().toLocaleString();
         if (applyKeyword) {
             if (appliedCount > 0) {
-                summaryMessage = `\n🎯 Auto-applied to ${appliedCount} jobs and opened ${openedCount} jobs to achieve this.`;
+                summaryMessage = `✅ Naukri Update Success on ${dateString}\n\n🎯 Auto-applied to ${appliedCount} jobs and opened ${openedCount} jobs to achieve this.`;
             } else {
-                summaryMessage = `\n🚫 No new jobs found to apply. Opened ${openedCount} jobs.`;
+                summaryMessage = `✅ Naukri Update Success on ${dateString}\n\n🚫 No new jobs found to apply. Opened ${openedCount} jobs.`;
             }
         } else {
-            summaryMessage = '\n⏩ Auto-apply was skipped (no keyword provided).';
+            summaryMessage = `✅ Naukri Update Success on ${dateString}\n\n⏩ Auto-apply was skipped (no keyword provided).`;
         }
-        await notify(`✅ Naukri Update Success\n📅 ${new Date().toLocaleString()}` + summaryMessage);
 
     } catch (err) {
         console.error(err);
-        await page.screenshot({ path: 'error.png' });
-        await notify("❌ Naukri Automation Failed");
-        process.exit(1);
+        summaryMessage = `❌ Naukri Automation Failed: ${err.message}`;
+        success = false;
+        if (page) {
+            await page.screenshot({ path: 'error.png' });
+        }
     } finally {
-        await browser.close();
+        console.log("Execution finished. Sending notifications...");
+        const subject = success ? "✅ Naukri Bot Run Successful" : "❌ Naukri Bot Run Failed";
+
+        await Promise.all([
+            sendTelegram(summaryMessage),
+            sendEmailWithAttachment(subject, summaryMessage)
+        ]);
+
+        console.log("All notifications sent.");
+        if (browser) {
+            await browser.close();
+        }
+
+        if (!success) {
+            process.exit(1);
+        }
     }
 })();
