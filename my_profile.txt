@@ -23,11 +23,11 @@ Full Stack Java Developer with 3.5 years of experience building scalable enterpr
 - **Question**: Are you willing to relocate to Hyderabad/Bangalore?
   - **Answer**: Yes, I am open to relocating for the right opportunity.
 - **Question**: What is your notice period?
-  - **Answer**: My notice period is 2 months.
-- **Question**: What is your current CTC?
-  - **Answer**: 7.5 LPA
-- **Question**: What is your expected CTC?
-  - **Answer**: 12 LPA
+  - **Answer**: My notice period is 2 months. If the options are in days, choose "60 days".
+- **Question**: What is your current salary or CTC?
+  - **Answer**: My current salary is 7.5 Lakhs Per Annum (LPA). This is equivalent to 750,000 INR. For questions asking if my salary is within a range, use the value 7.5 Lakhs.
+- **Question**: What is your expected salary or CTC?
+  - **Answer**: My expected salary is 12 Lakhs Per Annum (LPA). This is equivalent to 1,200,000 INR.
 - **Question**: What is your Date of Birth (d.o.b or dob)?
   - **Answer**: 15-07-1999
 - **Question**: What is your GitHub profile link?

@@ -86,15 +86,15 @@ async function handleQuestionnaire(page, profileContent, jobUrl) {
                 ${profileContent}
                 QUESTION: "${currentQuestion}"
                 OPTIONS: [${options.map(o => `"${o}"`).join(', ')}]
-                Respond with a comma-separated list of the options to select.`;
+                Respond with a semicolon-separated list of the options to select (e.g., "Option 1;Option 2").`;
                 const groqAnswer = await generateGroqContent(prompt);
                 await delay(2000, 3000);
                 if (!groqAnswer) {
                     console.log("⚠️ Groq could not generate answers for checkboxes. Skipping job.");
                     return false;
                 }
-                const selectedOptions = groqAnswer.split(',').map(opt => opt.trim().replace(/"/g, ''));
-                console.log(`🤖 Groq chose: ${selectedOptions.join(', ')}`);
+                const selectedOptions = groqAnswer.split(';').map(opt => opt.trim().replace(/"/g, ''));
+                console.log(`🤖 Groq chose: ${selectedOptions.join('; ')}`);
                 let allOptionsFoundAndClicked = true;
                 await delay(1000);
                 const allLabelLocators = await page.locator('label.mcc__label').all();
